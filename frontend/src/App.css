@@ -1,0 +1,26 @@
+.App {
+  background-image: url('../public/images/web-storage-wallpaper.jpg');
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-size: cover;
+  background-position: center;
+
+  /* Add semi-transparent layer */
+  position: relative;
+}
+
+.App::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.3);
+  /* Adjust the alpha value (0.5) to control the transparency */
+  z-index: 1;
+}
+
+/* #1976D2 */
