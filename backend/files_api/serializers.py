@@ -11,3 +11,10 @@ class UserFileSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserFile
         fields = "__all__"
+
+    # NOTE: Testing method to be used in patch method of UserFileDetailView
+    def update(self, instance, validated_data):
+        instance.name = validated_data.get("name", instance.name)
+        instance.comment = validated_data.get("comment", instance.comment)
+        instance.save()
+        return instance

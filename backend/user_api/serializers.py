@@ -43,7 +43,13 @@ class UserLoginSerializer(serializers.Serializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = Users
-        fields = ("id", "email", "username", "is_staff", "storage_path")
+        fields = (
+            "id",
+            "email",
+            "username",
+            "is_staff",
+            "storage_path",
+        )
 
     # Overrides the update method to handle the 'is_staff' field
     def update(self, instance, validated_data):
@@ -55,3 +61,20 @@ class UserSerializer(serializers.ModelSerializer):
 
         instance.save()
         return instance
+
+
+class GetUsersViewSerializer(serializers.ModelSerializer):
+    num_files = serializers.IntegerField()
+    # size_files = serializers.IntegerField()
+
+    class Meta:
+        model = Users
+        fields = (
+            "id",
+            "email",
+            "username",
+            "is_staff",
+            "storage_path",
+            "num_files",
+            # "size_files",
+        )

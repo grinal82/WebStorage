@@ -1,10 +1,12 @@
 from user_api.serializers import (
+    GetUsersViewSerializer,
     UserLoginSerializer,
     UserResiterSerializer,
     UserSerializer,
 )
-from user_api.validations import custom_validation, validate_email, validate_password
+from user_api.validations import custom_validation
 from .models import Users
+from django.db.models import Count, Sum, F, ExpressionWrapper, FloatField
 from django.contrib.auth import authenticate, login, logout
 from rest_framework.views import APIView
 from rest_framework import permissions, status
@@ -105,8 +107,13 @@ class GetUsersView(APIView):
     # NOTE: Getting all users by admin user
     def get(self, request):
         try:
-            users = Users.objects.all()
-            serializer = UserSerializer(users, many=True)
+            users = (
+                Users.objects.annotate(num_files=Count("userfile"))
+                .prefetch_related("userfile_set")
+                .all()
+            )
+
+            serializer = GetUsersViewSerializer(users, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)

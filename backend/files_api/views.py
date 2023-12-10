@@ -127,14 +127,44 @@ class UserFileDetailView(generics.RetrieveUpdateDestroyAPIView):
 
     # Update the file's property
     def patch(self, request, *args, **kwargs):
-        instance = self.get_object()
-        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        user_id = request.query_params.get("user_id")
+        file_id = request.query_params.get("file_id")
+        # Check if user ID and file ID are provided
+        if not user_id or not file_id:
+            return Response(
+                {"error": "User ID and file ID are required"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # Check if the specified user exists
+        user = get_object_or_404(Users, id=user_id)
+
+        # Check if the specified file exists
+        user_file = get_object_or_404(UserFile, id=file_id, user=user)
+
+        # Update the file's property
+        serializer = self.get_serializer(user_file, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
-        serializer.save()
+        self.perform_update(serializer)
         return Response(serializer.data)
 
     # Delete the file
     def delete(self, request, *args, **kwargs):
-        instance = self.get_object()
-        instance.delete()
+        user_id = request.query_params.get("user_id")
+        file_id = request.query_params.get("file_id")
+
+        if not user_id or not file_id:
+            return Response(
+                {"error": "User ID and file ID are required"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # Check if the specified user exists
+        user = get_object_or_404(Users, id=user_id)
+
+        # Check if the specified file exists
+        user_file = get_object_or_404(UserFile, id=file_id, user=user)
+
+        # Delete the file
+        self.perform_destroy(user_file)
         return Response(status=status.HTTP_204_NO_CONTENT)

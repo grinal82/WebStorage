@@ -4,6 +4,7 @@ import { LogIn } from "./pages/LogIn";
 import { WelcomePage } from "./pages/WelcomePage";
 import { Register } from "./pages/Register";
 import { UserStorage } from "./pages/UserStorage";
+import { AdminInspectFiles } from "./pages/AdminInspectFiles";
 import Navbar from "./components/Navbar";
 import { fetchCsrfToken } from "./store/authReducer";
 import { useEffect } from "react";
@@ -21,6 +22,7 @@ function App() {
           <Route path="/sign-in" element={<LogIn />} />
           <Route path="/sign-up" element={<Register />} />
           <Route path="/user/:id" element={<UserStorage />} />
+          <Route path="/inspect/:id" element={<AdminInspectFiles />} />
         </Routes>
       </Router>
     </div>

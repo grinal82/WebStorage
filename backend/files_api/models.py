@@ -17,9 +17,5 @@ class UserFile(models.Model):
     upload_date = models.DateTimeField(auto_now_add=True)
     last_download_date = models.DateTimeField(auto_now=False, null=True)
 
-    # def __init__(self, *args, **kwargs):
-    #     super().__init__(*args, **kwargs)
-    #     self.last_download_date = timezone.now()
-
     def __str__(self):
         return f"{self.user} - {self.name}"

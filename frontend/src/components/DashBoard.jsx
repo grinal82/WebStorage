@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { fetchUsers,fetchAdminToggle, fetchDeleteUser } from '../store/adminReducer';
+import { fetchUsers,fetchAdminToggle, fetchDeleteUser, fetchInspectFiles, setInspectedUser, deleteInspectedUser } from '../store/adminReducer';
 
 export const DashBoard = () => {
     const dispatch = useDispatch();
@@ -35,6 +35,11 @@ export const DashBoard = () => {
       }
     };
 
+    const handleInspectUser = async (id) => {
+      await dispatch(fetchInspectFiles(id));
+      await dispatch(setInspectedUser(id));
+      await navigate(`/inspect/${id}`);
+    };
 
   
     return (
@@ -78,13 +83,13 @@ export const DashBoard = () => {
                         onChange={() => handleToggleAdmin(user.id, !user.is_staff)}
                       />
                     </td>
-                    <td>number of files</td>
+                    <td>{user.num_files}</td>
                     <td>size of files</td>
                     <td>
-                      <button >Inspect</button>
+                      <button className='menu-btn' onClick={() => handleInspectUser(user.id)} >Inspect</button>
                     </td>
                     <td>
-                      <button onClick={() => handleDeleteUser(user.id)}>Delete</button>
+                      <button className='menu-btn' onClick={() => handleDeleteUser(user.id)}>Delete</button>
                     </td>
                   </tr>
                 ))
