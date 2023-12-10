@@ -25,12 +25,12 @@ export const fetchUsers = createAsyncThunk("users/fetchUsers", async () => {
 
 export const fetchAdminToggle = createAsyncThunk(
   "users/fetchAdminToggle",
-  async ({ userID }) => {
+  async ({ userID, is_staff }) => {
     try {
       const csrftoken = Cookies.get("csrftoken");
       const response = await client.put(
         `/accounts/get_users/${userID}`,
-        {},
+        { is_staff: is_staff },
         {
           headers: {
             "X-CSRFToken": csrftoken,
@@ -41,6 +41,25 @@ export const fetchAdminToggle = createAsyncThunk(
       return data;
     } catch (error) {
       console.error("Error toggling admin status:", error);
+      throw error;
+    }
+  }
+);
+
+export const fetchDeleteUser = createAsyncThunk(
+  "users/fetchDeleteUser",
+  async ({ userID }) => {
+    try {
+      const csrftoken = Cookies.get("csrftoken");
+      const response = await client.delete(`/accounts/get_users/${userID}`, {
+        headers: {
+          "X-CSRFToken": csrftoken,
+        },
+      });
+      const data = await response.data;
+      return data;
+    } catch (error) {
+      console.error("Error deleting user:", error);
       throw error;
     }
   }
@@ -78,6 +97,18 @@ export const adminSlice = createSlice({
       );
     },
     [fetchAdminToggle.rejected]: (state, action) => {
+      state.loading = false;
+      state.error = action.error.message;
+    },
+    [fetchDeleteUser.pending]: (state) => {
+      state.error = null;
+      state.loading = true;
+    },
+    [fetchDeleteUser.fulfilled]: (state, action) => {
+      state.loading = false;
+      state.users = state.users.filter((user) => user.id !== action.payload.id);
+    },
+    [fetchDeleteUser.rejected]: (state, action) => {
       state.loading = false;
       state.error = action.error.message;
     },

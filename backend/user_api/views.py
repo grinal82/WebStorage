@@ -98,23 +98,6 @@ class UserLogout(APIView):
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
-class DeleteAccountView(APIView):
-    authentication_classes = [SessionAuthentication]
-
-    def post(self, request):
-        try:
-            user = self.request.user
-            user_instance = Users.objects.get(id=user.id)
-            user_instance.delete()
-            return Response({"success": "Account deleted"}, status=status.HTTP_200_OK)
-        except Users.DoesNotExist:
-            return Response(
-                {"error": "User not found"}, status=status.HTTP_404_NOT_FOUND
-            )
-        except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
-
 class GetUsersView(APIView):
     authentication_classes = [SessionAuthentication]
     permission_classes = [IsAdminUser]
@@ -136,6 +119,19 @@ class GetUsersView(APIView):
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
+        except Users.DoesNotExist:
+            return Response(
+                {"error": "User not found"}, status=status.HTTP_404_NOT_FOUND
+            )
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+    # NOTE: Deleting selected user by admin
+    def delete(self, request, user_id):
+        try:
+            user = Users.objects.get(id=user_id)
+            user.delete()
+            return Response({"success": "User deleted"}, status=status.HTTP_200_OK)
         except Users.DoesNotExist:
             return Response(
                 {"error": "User not found"}, status=status.HTTP_404_NOT_FOUND

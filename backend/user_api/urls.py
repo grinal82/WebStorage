@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import (
-    DeleteAccountView,
+    # DeleteAccountView,
     GetUsersView,
     UserRegister,
     GetCSRFToken,
@@ -15,7 +15,6 @@ urlpatterns = [
     path("authenticate", CheckAuthenticatedView.as_view()),
     path("login", UserLogin.as_view()),
     path("logout", UserLogout.as_view()),
-    path("delete", DeleteAccountView.as_view()),
     path("get_users", GetUsersView.as_view()),
     path("get_users/<int:user_id>", GetUsersView.as_view()),
 ]

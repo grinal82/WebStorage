@@ -1,16 +1,16 @@
 .App {
   background-image: url('../public/images/web-storage-wallpaper.jpg');
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
   background-size: cover;
   background-position: center;
-
-  /* Add semi-transparent layer */
   position: relative;
 }
 
+/* Add semi-transparent layer */
 .App::after {
   content: "";
   position: absolute;

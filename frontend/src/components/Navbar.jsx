@@ -31,7 +31,7 @@ const Navbar = () => {
       <Link to={'/'} className="app-name">Grin-Storage</Link>
       {localUser!==null ? ( // If user is logged in
         <div className="user-info">
-          <div className="user-info_username"><p>Hello, {user.username}</p></div>
+          <div className="user-info_username"><p>Hello, {user.username.toUpperCase()}</p></div>
           <button className="logout-btn" onClick={handleLogout}>Logout</button>
         </div>
       ) : ( // If no user is logged in
