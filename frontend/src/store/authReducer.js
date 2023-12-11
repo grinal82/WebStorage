@@ -48,7 +48,16 @@ export const fetchRegisterUser = createAsyncThunk(
       return data;
     } catch (error) {
       console.error("Error registering user:", error);
-      throw error;
+      if (error.response && error.response.data && error.response.data.errors) {
+        // If the error response has an "errors" field, handle it
+        const errorMessage = Object.values(error.response.data.errors).join(
+          ", "
+        );
+        throw new Error(errorMessage);
+      } else {
+        // If no specific error information is available, rethrow the original error
+        throw error;
+      }
     }
   }
 );
@@ -118,7 +127,14 @@ const authSlice = createSlice({
     csrf: null,
     message: null,
   },
-  reducers: {},
+  reducers: {
+    clearError: (state) => {
+      state.error = null;
+    },
+    clearMessage: (state) => {
+      state.message = null;
+    },
+  },
   extraReducers: {
     [fetchCsrfToken.pending]: (state) => {
       state.loading = true;
@@ -167,4 +183,5 @@ const authSlice = createSlice({
   },
 });
 
+export const { clearError, clearMessage } = authSlice.actions;
 export default authSlice.reducer;

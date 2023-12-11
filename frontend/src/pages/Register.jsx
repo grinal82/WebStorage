@@ -1,12 +1,14 @@
 import React, { useEffect } from 'react'
 import { useState} from 'react'
 import { useNavigate } from 'react-router-dom'
-import {useDispatch } from 'react-redux'
-import { fetchRegisterUser } from '../store/authReducer'
+import {useDispatch, useSelector } from 'react-redux'
+import { fetchRegisterUser, clearError } from '../store/authReducer'
 
 export const Register = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
+
+  const registerError = useSelector((state) => state.auth.error);
 
   const [formValid, setFormValid] = useState(false)
   
@@ -91,6 +93,7 @@ export const Register = () => {
     dispatch(fetchRegisterUser(registerUser)).then((action) => {
       const isRegisterUserFulfilled = fetchRegisterUser.fulfilled.match(action);
       if (isRegisterUserFulfilled) {
+        dispatch(clearError());
         navigate(`/sign-in`);
       }
     });
@@ -114,6 +117,7 @@ export const Register = () => {
                 <i className='bx bxs-user'></i>
             </div>
             <div className="input-box">
+                {registerError && <p className="error" style={{color: 'red'}}>{registerError}</p>}
                 {(inputDirty.email && inputError.email) && <div className="error" style={{color: 'red', position: 'absolute', left: '380px', backgroundColor: 'antiquewhite', width: 'max-content', borderRadius: '15px', padding: '5px'}}>{inputError.email}</div>}
                 <input 
                 name='email' 
