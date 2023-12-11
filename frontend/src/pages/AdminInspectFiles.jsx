@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchInspectFiles, AdminUpdateFile, deleteInspectedUser } from '../store/adminReducer'
+import { fetchInspectFiles, AdminUpdateFile, deleteInspectedUser, AdminDeleteFile } from '../store/adminReducer'
 import { useNavigate } from 'react-router-dom'
 import { format } from 'date-fns'
 
@@ -25,10 +25,10 @@ export const AdminInspectFiles = () => {
   };
 
   const handleDelete = async () => {
-    // await dispatch(deleteFile({fileID:selectedFile.id}));
-    // setSelectedFile(null);
-    // await dispatch(fetchFiles()); // Fetch the updated file list
-    // setLoaded(false);
+    await dispatch(AdminDeleteFile({userID:inspectedUser, fileID:selectedFile.id}));
+    setSelectedFile(null);
+    await dispatch(fetchInspectFiles(inspectedUser)); // Fetch the updated file list
+    setLoaded(false);
   }
 
   const handleRename =  async () => {

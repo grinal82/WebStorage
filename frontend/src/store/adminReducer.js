@@ -7,6 +7,7 @@ const client = axios.create({
   baseURL: "http://localhost:8001",
 });
 
+// Fetch all users by Admin
 export const fetchUsers = createAsyncThunk("users/fetchUsers", async () => {
   try {
     const csrftoken = Cookies.get("csrftoken");
@@ -23,6 +24,7 @@ export const fetchUsers = createAsyncThunk("users/fetchUsers", async () => {
   }
 });
 
+// Toggle admin status for a user by Admin
 export const fetchAdminToggle = createAsyncThunk(
   "users/fetchAdminToggle",
   async ({ userID, is_staff }) => {
@@ -46,6 +48,7 @@ export const fetchAdminToggle = createAsyncThunk(
   }
 );
 
+// Delete user by Admin
 export const fetchDeleteUser = createAsyncThunk(
   "users/fetchDeleteUser",
   async ({ userID }) => {
@@ -65,6 +68,7 @@ export const fetchDeleteUser = createAsyncThunk(
   }
 );
 
+// Fetch files for a specific user by Admin
 export const fetchInspectFiles = createAsyncThunk(
   "files/fetchInspectFiles",
   async (id) => {
@@ -84,7 +88,7 @@ export const fetchInspectFiles = createAsyncThunk(
   }
 );
 
-// TODO: Set-up the thunk to work properly
+// Update files for a specific user by Admin
 export const AdminUpdateFile = createAsyncThunk(
   "files/AdminUpdateFile",
   async ({ userID, fileID, message }) => {
@@ -92,7 +96,7 @@ export const AdminUpdateFile = createAsyncThunk(
       const csrftoken = Cookies.get("csrftoken");
       const response = await client.patch(
         `/files/admin?user_id=${userID}&file_id=${fileID}`,
-        { message },
+        message,
         {
           headers: {
             "X-CSRFToken": csrftoken,
@@ -104,6 +108,29 @@ export const AdminUpdateFile = createAsyncThunk(
       return data;
     } catch (error) {
       console.error("Error updating file:", error.response.data); // Loging the entire response for more details
+      throw error;
+    }
+  }
+);
+
+// Delete files for a specific user by Admin
+export const AdminDeleteFile = createAsyncThunk(
+  "files/AdminDeleteFile",
+  async ({ userID, fileID }) => {
+    try {
+      const csrftoken = Cookies.get("csrftoken");
+      const response = await client.delete(
+        `/files/admin?user_id=${userID}&file_id=${fileID}`,
+        {
+          headers: {
+            "X-CSRFToken": csrftoken,
+          },
+        }
+      );
+      const data = await response.data;
+      return data;
+    } catch (error) {
+      console.error("Error deleting file:", error.response.data); // Loging the entire response for more details
       throw error;
     }
   }
@@ -188,6 +215,20 @@ export const adminSlice = createSlice({
       );
     },
     [AdminUpdateFile.rejected]: (state, action) => {
+      state.loading = false;
+      state.error = action.error.message;
+    },
+    [AdminDeleteFile.pending]: (state) => {
+      state.error = null;
+      state.loading = true;
+    },
+    [AdminDeleteFile.fulfilled]: (state, action) => {
+      state.loading = false;
+      state.inspectFiles = state.inspectFiles.filter(
+        (file) => file.id !== action.payload.id
+      );
+    },
+    [AdminDeleteFile.rejected]: (state, action) => {
       state.loading = false;
       state.error = action.error.message;
     },

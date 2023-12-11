@@ -16,5 +16,7 @@ class UserFileSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         instance.name = validated_data.get("name", instance.name)
         instance.comment = validated_data.get("comment", instance.comment)
+        instance = super().update(instance, validated_data)
+
         instance.save()
         return instance

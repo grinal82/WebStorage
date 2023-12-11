@@ -93,7 +93,7 @@ def Serve_file(request, file_id):
     return response
 
 
-# NOTE: for testing generic view (get, patch, delete)
+# NOTE: for Admin users (get, patch, delete)
 class UserFileDetailView(generics.RetrieveUpdateDestroyAPIView):
     """
     Gonna test if this is suitable to perform 3 actions of admin user:
@@ -129,6 +129,7 @@ class UserFileDetailView(generics.RetrieveUpdateDestroyAPIView):
     def patch(self, request, *args, **kwargs):
         user_id = request.query_params.get("user_id")
         file_id = request.query_params.get("file_id")
+
         # Check if user ID and file ID are provided
         if not user_id or not file_id:
             return Response(
