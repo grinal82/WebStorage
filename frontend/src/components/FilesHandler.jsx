@@ -29,14 +29,14 @@ export const FilesHandler = () => {
   const handleDelete = async () => {
     await dispatch(deleteFile({fileID:selectedFile.id}));
     setSelectedFile(null);
-    await dispatch(fetchFiles()); // Fetch the updated file list
+    await dispatch(fetchFiles()); // Fetch the updated file list after delete
     setLoaded(false);
   }
 
   const handleRename =  async () => {
     await dispatch(updateFile({fileID:selectedFile.id, message:{name:newFileName}}));
     setSelectedFile(null);
-    await dispatch(fetchFiles()); // Fetch the updated file list
+    await dispatch(fetchFiles()); // Fetch the updated file list after rename
     setLoaded(false);
   }
 
@@ -50,9 +50,36 @@ export const FilesHandler = () => {
     console.log("FormData:", formData);
 
     await dispatch(uploadFile({ formData }));
-    await dispatch(fetchFiles()); // Fetch the updated file list
+    await dispatch(fetchFiles()); // Fetch the updated file list after upload
     setLoaded(false);
   }
+
+  // NOTE: Download functionality
+  const handleDownload = () => {
+
+    const fileID = selectedFile.id;
+
+    const fileDownloadLink = `http://localhost:8001/files/${fileID}/`;
+  
+    if (fileDownloadLink) {
+      // Create a link element
+      const link = document.createElement('a');
+  
+      // Set the href attribute to the download link
+      link.href = fileDownloadLink;
+  
+      // Specify the download attribute and set the file name
+      link.download = selectedFile.name;
+  
+      // Trigger a click on the link to start the download
+      document.body.appendChild(link);
+      link.click();
+  
+      // Remove the link from the document
+      document.body.removeChild(link);
+    }
+  };
+  
 
   const handleGenerateLink = () => {
     
@@ -74,6 +101,13 @@ export const FilesHandler = () => {
     });
   };
 
+  const formatFileSize = (sizeInBytes) => {
+    const sizeInMegabytes = sizeInBytes / (1024 * 1024); // 1 MB = 1024 KB = 1024 * 1024 bytes
+    const formattedSize = sizeInMegabytes.toFixed(2); 
+    return `${formattedSize} MB`;
+  };
+  
+
   return (
     <div className="user-storage">
       <div className="file-list">
@@ -83,6 +117,7 @@ export const FilesHandler = () => {
             <tr>
               <th>File Name</th>
               <th>Comment</th>
+              <th>File Size</th>
               <th>Upload Date</th>
               <th>Last Download Date</th>
             </tr>
@@ -93,8 +128,9 @@ export const FilesHandler = () => {
                 <tr className='file' key={file.id} onClick={() => handleFileSelect(file)}>
                   <td>{file.name}</td>
                   <td>{file.comment}</td>
+                  <td>{formatFileSize(file.size)}</td>
                   <td>{format(new Date(file.upload_date), 'dd/MM/yyyy HH:mm')}</td>
-                  <td>{format(new Date(file.last_download_date), 'dd/MM/yyyy HH:mm')}</td>
+                  <td>{file.last_download_date ? format(new Date(file.last_download_date), 'dd/MM/yyyy HH:mm') : ''}</td>
                 </tr>
               ))
             ) : (
@@ -122,6 +158,9 @@ export const FilesHandler = () => {
           <button onClick={handleRename}>Rename</button>
           <button onClick={handleDelete}>Delete</button>
           <button onClick={handleGenerateLink}>Generate Link</button>
+          <button onClick={handleDownload} disabled={!selectedFile}>
+            Download
+          </button>
           <div className='file_link'>
             <input type="text" value={generatedLink} readOnly />
             <button onClick={handleCopyLink}>Copy Link</button>

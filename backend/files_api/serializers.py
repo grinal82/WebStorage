@@ -5,6 +5,7 @@ from .models import UserFile
 class UserFileUploadSerializer(serializers.Serializer):
     file = serializers.FileField()
     comment = serializers.CharField(required=False, allow_blank=True)
+    # size = serializers.IntegerField(required=False, allow_null=True)
 
 
 class UserFileSerializer(serializers.ModelSerializer):

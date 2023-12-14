@@ -30,9 +30,14 @@ class UserFileUploadView(APIView):
                 print("User:", user)
                 print("File Name:", file.name)
                 print("Comment:", comment)
+                print("File Size:", file.size)
 
                 user_file = UserFile(
-                    user=user, file=file, name=file.name, comment=comment
+                    user=user,
+                    file=file,
+                    name=file.name,
+                    comment=comment,
+                    size=file.size,
                 )
                 user_file.save()
 

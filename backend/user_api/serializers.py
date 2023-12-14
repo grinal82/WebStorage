@@ -65,7 +65,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 class GetUsersViewSerializer(serializers.ModelSerializer):
     num_files = serializers.IntegerField()
-    # size_files = serializers.IntegerField()
+    size_files = serializers.IntegerField()
 
     class Meta:
         model = Users
@@ -76,5 +76,5 @@ class GetUsersViewSerializer(serializers.ModelSerializer):
             "is_staff",
             "storage_path",
             "num_files",
-            # "size_files",
+            "size_files",
         )

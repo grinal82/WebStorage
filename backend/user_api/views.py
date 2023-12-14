@@ -108,7 +108,9 @@ class GetUsersView(APIView):
     def get(self, request):
         try:
             users = (
-                Users.objects.annotate(num_files=Count("userfile"))
+                Users.objects.annotate(
+                    num_files=Count("userfile"), size_files=Sum("userfile__size")
+                )
                 .prefetch_related("userfile_set")
                 .all()
             )

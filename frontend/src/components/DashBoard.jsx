@@ -15,6 +15,11 @@ export const DashBoard = () => {
       dispatch(fetchUsers());
     }, [dispatch]);
 
+    const formatFileSize = (sizeInBytes) => {
+      const sizeInMegabytes = sizeInBytes / (1024 * 1024); // 1 MB = 1024 KB = 1024 * 1024 bytes
+      const formattedSize = sizeInMegabytes.toFixed(2); // Round to two decimal places
+      return `${formattedSize} MB`;
+    };
 
     const handleToggleAdmin = async (id, is_staff) => {
       try {
@@ -84,7 +89,7 @@ export const DashBoard = () => {
                       />
                     </td>
                     <td>{user.num_files}</td>
-                    <td>size of files</td>
+                    <td>{formatFileSize(user.size_files)}</td>
                     <td>
                       <button className='menu-btn' onClick={() => handleInspectUser(user.id)} >Inspect</button>
                     </td>
