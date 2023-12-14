@@ -1,4 +1,4 @@
-# cloud-storage web-app
+# Webstorage web-app
 
 ## Quick start
 
