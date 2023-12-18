@@ -1,6 +1,6 @@
 # Webstorage web-app
 
-## Quick start
+## Quick start (LOCAL INSTALLATION)
 
 installation Steps if you want to try it out
 
@@ -17,21 +17,24 @@ source venv/bin/activate
 
 pip install -r requirements.txt
 
+python manage.py makemigrations
+
 python manage.py migrate
-
-python manage.py runserver 8001
-
 
 ```
 
 > frontend section
 
 ```bash
-cd ../../frontend
+cd ../frontend/
 
 npm install
 
 npm run build
+
+cd ../backend/
+
+python manage.py runserver 8001
 
 ```
 
@@ -41,3 +44,12 @@ The frontend is compiled into the `build` folder, which is copied to the backend
 ## After installation of all requirements the struncture of the project should be like that
 
 ![structure](/assets/StructureOfProject.png)
+
+## DEPLOYMENT ON A SERVER
+
+```bash
+ssh root@<your server IP address>
+
+
+
+```
