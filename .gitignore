@@ -18,6 +18,9 @@
 backend/**/staticfiles/
 backend/static/
 
+# .env file with sensible data
+/backend/.env
+
 # Python bytecode
 /backend/webstorage/__pycache__/
 /backend/**/__pycache__/
