@@ -24,7 +24,7 @@ backend/static/
 /backend/**/migrations/__pycache__/
 
 # Ignore migration files
-/backend/**/migrations/
+/backend/**/migrations/0*.py
 
 /backend/.flake8
 

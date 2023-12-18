@@ -17,8 +17,6 @@ source venv/bin/activate
 
 pip install -r requirements.txt
 
-cd webstorage
-
 python manage.py migrate
 
 python manage.py runserver 8001
