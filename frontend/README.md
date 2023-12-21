@@ -1,70 +1,45 @@
-# Getting Started with Create React App
+# Grin-storage
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+![welcome](/assets/welcome_page.png)
+
+## Basic Interface
+
+### Registration form
+
+![Registration](/assets/register_form_verification.png)
+
+The resitration form is set up to validate the email pattern, password (sould be at least 6 characters and include 1 digit, 1 capital letter and a special symbol), username which should be at least 4 characters long
+
+### Login form 
+
+![Login](/assets/login_form_badpassword.png)
+
+The login form notifies if the email or password are wrong
+
+### User's storage
+
+![UserStorage](/assets/userStorageWithFunctions.png)
+
+User can upload files, change their names, generate a link to the file which he can share online for the other person to download. He can directly download the file by clicking on the appropriate button.
+
+The table with files displays the size of the file, its upload date and last download date. When someone downloads the file the 'last_download_date' field is updated.
+
+### ADMIN capabilities
+
+![Admin-Dashboard](/assets/AdminDashboard.png)
+
+Admins can benifit from the same capabilities as other users, plus as admins they can see all users of the application, see the number of files each user uploaded, the size of their files.
+
+Admin can also appoint admin fuctions to other users by clicking on the checkbox.
+
+Admins can inspect each user's storage, rename their files, share and download them 
+
+![Admin-inspect-other-users](/assets/AdminInspectOtherUsers.png)
 
 ## Available Scripts
 
-In the project directory, you can run:
-
-### `npm start`
-
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
-
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+In the frontend directory, you can run:
 
 ### `npm run build`
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+The build folder will be compiled and copied to backend section so that DJANGO can use the static from that folder to generate templates.
