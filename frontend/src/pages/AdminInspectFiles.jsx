@@ -14,6 +14,7 @@ export const AdminInspectFiles = () => {
   const [loaded, setLoaded] = useState(false);
   
   const user = useSelector((state) => state.auth.user);
+  const users = useSelector((state) => state.admin.users);
   const inspectedUser = useSelector((state) => state.admin.inspectedUser);
   const userFiles = useSelector((state) => state.admin.inspectFiles);
   const loading = useSelector((state) => state.admin.loading);
@@ -91,7 +92,7 @@ export const AdminInspectFiles = () => {
   };
 
   const handleGoBack = () => {
-    dispatch(deleteInspectedUser());
+    // dispatch(deleteInspectedUser());
     navigate(-1);
   };
 
@@ -99,7 +100,7 @@ export const AdminInspectFiles = () => {
     (
         <div className="user-storage">
           <div className="file-list">
-            <h2>Files of {user.username.toUpperCase()}</h2>
+            <h2>Files of {users.find((user) => user.id === inspectedUser).username.toUpperCase()}</h2>
             <table className='file-table'>
               <thead>
                 <tr>
