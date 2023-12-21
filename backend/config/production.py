@@ -9,6 +9,7 @@ DEBUG = False
 
 ALLOWED_HOSTS = ["79.174.86.182"]
 
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 DATABASES = {
     "default": {
