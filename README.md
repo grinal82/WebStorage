@@ -27,7 +27,7 @@ python manage.py migrate
 
 > frontend section
 
-## be sure to install 'npm' and 'node' then proceed as follows
+### be sure to install 'npm' and 'node' then proceed as follows
 
 ```bash
 cd ../frontend/
@@ -48,6 +48,7 @@ The frontend is compiled into the `build` folder, which is copied to the backend
 ## After installation of all requirements the struncture of the project should be like that
 
 ![structure](/assets/StructureOfProject.png)
+
 
 ## DEPLOYMENT ON A SERVER
 
@@ -142,10 +143,195 @@ nano config/production.py
 
 > check if DEBUG variable is set to 'FALSE', write down your IP and/or domain in the 'ALLOWED_HOSTS'
 
+DEBUG = False
+
+ALLOWED_HOSTS = ["YOUR_IP","YOUR DOMAIN"]
+
+WSGI_APPLICATION= "webstorage.wsgi.application"
+
+CORS_ALLOWED_ORIGINS=[
+"http://localhost",
+"http://localhost:8001",
+"http://localhost:8000",
+]
+
+SECURE_CROSS_ORIGIN_OPENER_POLICY=None
+
+SECRET_KEY=os.getenv("SECRET_KEY")
+
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.getenv("DB_NAME"),
+        "USER": os.getenv("DB_USER"),
+        "PASSWORD": os.getenv("DB_PASSWORD"),
+        "HOST": "localhost",
+    }
+}
+
 ```bash
 nano manage.py
 ```
 
 Change 'os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.base")' to be 'os.environ.setdefault("DJANGO_SETTINGS_MODULE", *"config.production"*)'
 
-## Setting up the GUNICOR wich is WSGI (Web Server Gateway Interface)
+### GUNICORN - WSGI SETTINGS
+
+#### Checking if the gunicorn works if launched explicitly from the console
+
+```bash
+gunicorn --bind 0.0.0.0:8001 webstorage.wsgi
+```
+
+then you can open the browser type in your 'ip/domain:8001' and you should get the index page of the application
+
+#### Setting up the GUNICOR wich is WSGI (Web Server Gateway Interface) to work as a daemon/service (automatically)
+
+```bash
+sudo nano /etc/systemd/system/gunicorn.socket
+```
+
+>[Unit]
+>Description=gunicorn socket
+>
+>
+>[Socket]
+>ListenStream=/run/gunicorn.sock
+
+>[Install]
+
+>WantedBy=sockets.target
+
+```bash
+sudo nano /etc/systemd/system/gunicorn.service
+```
+
+>[Unit]
+>Description=gunicorn daemon
+>Requires=gunicorn.socket
+>After=network.target
+>
+>[Service]
+>User=grin
+>Group=www-data
+>WorkingDirectory=/home/{user}/WebStorage/backend
+>Environment="DJANGO_SETTINGS_MODULE=config.production"
+>ExecStart=/home/{user}/WebStorage/backend/venv/bin/gunicorn \
+>--access-logfile - \
+>--workers=3 \
+>--bind unix:/run/gunicorn.sock \
+>webstorage.wsgi:application
+>
+>[Install]
+>WantedBy=multi-user.target
+
+```bash
+sudo systemctl daemon-reload
+```
+
+```bash
+sudo systemctl start gunicorn.socket
+```
+
+```bash
+sudo systemctl enable gunicorn.socket
+```
+
+#### checking the status of the gunicorn service
+
+```bash
+sudo systemctl status gunicorn.socket
+```
+
+```bash
+sudo systemctl status gunicorn
+```
+
+-The output of the command should be *'Active: active (running); Listen: /run/gunicorn.sock (Stream)'*
+
+
+#### Lest check that gunicorn.cocket file is indeed created in '/run' directory
+
+```bash
+file run/gunicorn.sock
+```
+
+-Output: '/run/gunicorn.sock: socket'
+
+
+#### Checking the journal
+
+```bash
+sudo journalctl -u gunicorn.socket
+```
+
+-Output: 'Listening on gunicorn socket.'
+
+
+#### Additional check by curl requirements
+
+```bash
+curl --unix-socket /run/gunicorn.sock localhost
+```
+
+This command should display an html page in you console meaning that gunicorn
+is working properly. /run/gunicorn.sock: socket
+
+
+
+### Setting up NGINX server
+
+```bash
+sudo nano /etc/nginx/sites-available/webstorage
+```
+
+server {
+   listen 80;
+   server_name \<DOMAIN OR IP_ADDRESS\>;
+
+   location = /favicon.ico { access_log off; log_not_found off;}
+
+   location /static/ {
+      alias /home/{user}/WebStorage/backend;
+   }
+   location / {
+      include proxy_params;
+      proxy_pass http://unix:/run/gunicorn.sock;
+      proxy_http_version 1.1;
+      proxy_set_header Upgrade $http_upgrade;
+      proxy_set_header Connection 'upgrade';
+      proxy_set_header Host $host;
+      proxy_cache_bypass $http_upgrade;
+   }
+   location /media/ {
+      root /home/{user}/WebStorage/backend;
+   }
+   error_page 500 502 503 504 /50x.html;
+   location = /50x.html {
+      root /usr/share/nginx/html;
+   }
+}
+
+#### Creating a link for config file to enable them
+
+```bash
+sudo ln -s /etc/nginx/sites-available/webstorage  /etc/nginx/sites-enabled
+```
+
+#### Set the rule for firewall to allow nginx
+
+```bash
+sudo ufw allow 'Nginx Full'
+```
+
+#### restarting nginx
+
+```bash
+sudo systemctl restart nginx
+```
+
+#### checking the operational status of the nginx
+
+```bash
+sudo systemctl status nginx
+```
