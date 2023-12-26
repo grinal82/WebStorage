@@ -49,7 +49,6 @@ The frontend is compiled into the `build` folder, which is copied to the backend
 
 ![structure](/assets/StructureOfProject.png)
 
-
 ## DEPLOYMENT ON A SERVER
 
 ### Basic SERVER SETUP
@@ -143,7 +142,7 @@ git clone https://github.com/grinal82/WebStorage.git
 
 > NOTE: The "build" folder will be automaticlly copied to 'backend'(django) folder so that Django could use the static files and form templates
 
-```bash 
+```bash
 cd ~/WebStorage/frontend/
 
 npm install package.json
@@ -170,16 +169,18 @@ nano .env
 ```
 
 > creating '.env' file to store environment variables such as the credentials for Database you set up ealier and a 'SECRET_KEY' which can be generated ![here](https://djecrety.ir/)
-Enter your DB name
->DB_NAME = ""
-Enter your DB usrname
->DB_USER = ""
-Enter you DB password
->DB_PASSWORD = ""
-generate here:<https://djecrety.ir/>
->SECRET_KEY = ""
 
-#### install gunicorn WSGI 
+```
+DB_NAME = ""
+
+DB_USER = ""
+
+DB_PASSWORD = ""
+
+SECRET_KEY = ""
+```
+
+#### install gunicorn WSGI
 
 ```bash
 pip install gunicorn
@@ -193,6 +194,7 @@ nano config/production.py
 
 > check if DEBUG variable is set to 'FALSE', write down your IP and/or domain in the 'ALLOWED_HOSTS'
 
+```
 DEBUG = False
 
 ALLOWED_HOSTS = ["YOUR_IP","YOUR DOMAIN"]
@@ -218,6 +220,7 @@ DATABASES = {
         "HOST": "localhost",
     }
 }
+```
 
 ```bash
 sudo nano manage.py
@@ -241,7 +244,7 @@ python manage.py createsuperuser
 python manage.py collectstatic
 ```
 
-> you can check the initial deployment of the project by starting it manually 
+> you can check the initial deployment of the project by starting it manually
 
 ```(venv)~/WebStorage/backend/manage.py runserver 0.0.0.0:8001
 ```
@@ -328,7 +331,6 @@ sudo systemctl status gunicorn
 
 -The output of the command should be *'Active: active (running); Listen: /run/gunicorn.sock (Stream)'*
 
-
 #### Lest check that gunicorn.cocket file is indeed created in '/run' directory
 
 ```bash
@@ -337,7 +339,6 @@ file run/gunicorn.sock
 
 -Output: '/run/gunicorn.sock: socket'
 
-
 #### Checking the journal
 
 ```bash
@@ -345,7 +346,6 @@ sudo journalctl -u gunicorn.socket
 ```
 
 -Output: 'Listening on gunicorn socket.'
-
 
 #### Additional check by curl requirements
 
@@ -356,14 +356,13 @@ curl --unix-socket /run/gunicorn.sock localhost
 This command should display an html page in you console meaning that gunicorn
 is working properly. /run/gunicorn.sock: socket
 
-
-
 ### Setting up NGINX server
 
 ```bash
 sudo nano /etc/nginx/sites-available/webstorage
 ```
 
+```
 server {
    listen 80;
    server_name \<DOMAIN OR IP_ADDRESS\>;
@@ -390,6 +389,7 @@ server {
       root /usr/share/nginx/html;
    }
 }
+```
 
 #### Creating a link for config file to enable them
 
