@@ -73,35 +73,97 @@ su your_username
 
 ```
 
+### Basic installations needed for backend DEPLOYMENT
+
 ```bash
 sudo apt update && sudo apt upgrade
+sudo apt install python3-pip python3-dev libpq-dev postgresql postgresql-contrib nginx curl python3-venv
 ```
 
+### Installin node.js and npm to be able to compile the build folder in the frontend section
+
+1.Download and import the Nodesource GPG key
+
 ```bash
-sudo apt install python3-venv python3-pip postgresql nginx
+cd ~
+sudo apt-get update
+sudo apt-get install -y ca-certificates curl gnupg
+sudo mkdir -p /etc/apt/keyrings
+curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | sudo gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
 ```
 
+2.Create deb repository
+
 ```bash
-sudo systemctl start nginx
+NODE_MAJOR=20
+echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_$NODE_MAJOR.x nodistro main" | sudo tee /etc/apt/sources.list.d/nodesource.list
 ```
 
-```bash
-git clone https://github.com/grinal82/WebStorage.git
+3.Create deb repository
 
-cd WebStorage/backend
+```bash
+sudo apt-get update
+sudo apt-get install nodejs -y
 ```
 
 ### Setting up the DATABASE
 
 ```bash
-sudo su postgres
+sudo -u postgres psql
 
-ALTER USER postgres WITH PASSWORD 'SOME_NEW_PASSWORD'
+CREATE DATABASE webstorage;
 
-CREATE DATABASE <DB_NAME>
+CREATE USER ${username} WITH PASSWORD 'password';
+
+ALTER ROLE ${username} SET client_encoding TO 'utf8';
+ALTER ROLE ${username} SET default_transaction_isolation TO 'read committed';
+ALTER ROLE ${username} SET timezone TO 'UTC';
+
+GRANT ALL PRIVILEGES ON DATABASE webstorage TO ${username};
 
 \q
 ```
+
+### Project DEPLOYMENT
+
+#### upgrade pip manager
+
+```bash
+sudo -H pip3 install --upgrade pip
+
+```
+
+#### Cloning the repo with Project
+
+```bash
+git clone https://github.com/grinal82/WebStorage.git
+```
+
+#### Installing frontend requirement and compiling the project to 'build' folder
+
+> NOTE: The "build" folder will be automaticlly copied to 'backend'(django) folder so that Django could use the static files and form templates
+
+```bash 
+cd ~/WebStorage/frontend/
+
+npm install package.json
+
+npm run build
+```
+
+```bash
+cd ~/WebStorage/backend
+```
+
+#### Setting up the virtual environment, activating it and downloading the requirements for the project
+
+```bash
+python3 -m venv venv
+source venv/bin/activat
+pip install -r requirements.txt
+```
+
+#### Setting up environment variables
 
 ```bash
 nano .env
@@ -117,25 +179,13 @@ Enter you DB password
 generate here:<https://djecrety.ir/>
 >SECRET_KEY = ""
 
-```bash
-cd backend
-```
-
-```bash
-python -m venv venv 
-```
-
-```bash
-source venv/bin/activate
-```
-
-```bash
-pip install -r requirements.txt
-```
+#### install gunicorn WSGI 
 
 ```bash
 pip install gunicorn
 ```
+
+#### Changin setting to production ones
 
 ```bash
 nano config/production.py
@@ -170,10 +220,33 @@ DATABASES = {
 }
 
 ```bash
-nano manage.py
+sudo nano manage.py
 ```
 
 Change 'os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.base")' to be 'os.environ.setdefault("DJANGO_SETTINGS_MODULE", *"config.production"*)'
+
+#### Make and apply makemigrations
+
+```bash
+python3 manage.py makemigrations
+
+python3 manage.py migrate
+```
+
+#### Create superuser and collecting static fils
+
+```bash
+python manage.py createsuperuser
+
+python manage.py collectstatic
+```
+
+> you can check the initial deployment of the project by starting it manually 
+
+```(venv)~/WebStorage/backend/manage.py runserver 0.0.0.0:8001
+```
+
+*Open your browser at http://server_domain_or_IP:8001*
 
 ### GUNICORN - WSGI SETTINGS
 
@@ -187,43 +260,49 @@ then you can open the browser type in your 'ip/domain:8001' and you should get t
 
 #### Setting up the GUNICOR wich is WSGI (Web Server Gateway Interface) to work as a daemon/service (automatically)
 
+##### Dont forget to quit from virtual environment by ```deactivate```
+
 ```bash
 sudo nano /etc/systemd/system/gunicorn.socket
 ```
 
->[Unit]
->Description=gunicorn socket
->
->
->[Socket]
->ListenStream=/run/gunicorn.sock
+```
+[Unit]
+Description=gunicorn socket
 
->[Install]
 
->WantedBy=sockets.target
+[Socket]
+ListenStream=/run/gunicorn.sock
+
+[Install]
+
+WantedBy=sockets.target
+```
 
 ```bash
 sudo nano /etc/systemd/system/gunicorn.service
 ```
 
->[Unit]
->Description=gunicorn daemon
->Requires=gunicorn.socket
->After=network.target
->
->[Service]
->User=grin
->Group=www-data
->WorkingDirectory=/home/{user}/WebStorage/backend
->Environment="DJANGO_SETTINGS_MODULE=config.production"
->ExecStart=/home/{user}/WebStorage/backend/venv/bin/gunicorn \
->--access-logfile - \
->--workers=3 \
->--bind unix:/run/gunicorn.sock \
->webstorage.wsgi:application
->
->[Install]
->WantedBy=multi-user.target
+```
+[Unit]
+Description=gunicorn daemon
+Requires=gunicorn.socket
+After=network.target
+
+[Service]
+User=grin
+Group=www-data
+WorkingDirectory=/home/{user}/WebStorage/backend
+Environment="DJANGO_SETTINGS_MODULE=config.production"
+ExecStart=/home/{user}/WebStorage/backend/venv/bin/gunicorn \
+--access-logfile - \
+--workers=3 \
+--bind unix:/run/gunicorn.sock \
+webstorage.wsgi:application
+
+[Install]
+WantedBy=multi-user.target
+```
 
 ```bash
 sudo systemctl daemon-reload
