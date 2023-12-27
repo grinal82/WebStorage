@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { fetchInspectFiles, AdminUpdateFile, deleteInspectedUser, AdminDeleteFile } from '../store/adminReducer'
 import { useNavigate } from 'react-router-dom'
 import { format } from 'date-fns'
+import { BASIC_URL } from '../settings/basic';
 
 export const AdminInspectFiles = () => {
   const navigate = useNavigate();
@@ -43,7 +44,7 @@ export const AdminInspectFiles = () => {
 
     const fileID = selectedFile.id;
 
-    const fileDownloadLink = `http://localhost:8001/files/${fileID}/`;
+    const fileDownloadLink = `${BASIC_URL}/files/${fileID}/`;
   
     if (fileDownloadLink) {
       // Create a link element
@@ -68,7 +69,7 @@ export const AdminInspectFiles = () => {
   const handleGenerateLink = () => {
     
     const fileID = selectedFile.id;
-    const link = `http://localhost:8001/files/${fileID}/`;
+    const link = `${BASIC_URL}/files/${fileID}/`;
     setGeneratedLink(link);
   }
 

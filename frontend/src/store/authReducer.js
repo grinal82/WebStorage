@@ -1,9 +1,10 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import Cookies from "js-cookie";
+import { BASIC_URL } from "../settings/basic";
 
 const client = axios.create({
-  baseURL: "http://localhost:8001",
+  baseURL: BASIC_URL,
 });
 
 axios.defaults.withCredentials = true;

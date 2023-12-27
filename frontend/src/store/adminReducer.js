@@ -1,10 +1,11 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import Cookies from "js-cookie";
 import axios from "axios";
+import { BASIC_URL } from "../settings/basic";
 
 axios.defaults.withCredentials = true;
 const client = axios.create({
-  baseURL: "http://localhost:8001",
+  baseURL: BASIC_URL,
 });
 
 // Fetch all users by Admin

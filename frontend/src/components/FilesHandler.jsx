@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { format } from 'date-fns'
 import { deleteFile, fetchFiles, updateFile, uploadFile } from '../store/filesReducer';
+import { BASIC_URL } from '../settings/basic';
 
 
 export const FilesHandler = () => {
@@ -59,7 +60,7 @@ export const FilesHandler = () => {
 
     const fileID = selectedFile.id;
 
-    const fileDownloadLink = `http://localhost:8001/files/${fileID}/`;
+    const fileDownloadLink = `${BASIC_URL}/files/${fileID}/`;
   
     if (fileDownloadLink) {
       // Create a link element
@@ -84,7 +85,7 @@ export const FilesHandler = () => {
   const handleGenerateLink = () => {
     
     const fileID = selectedFile.id;
-    const link = `http://localhost:8001/files/${fileID}/`;
+    const link = `${BASIC_URL}/files/${fileID}/`;
     setGeneratedLink(link);
   }
 
