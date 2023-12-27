@@ -6,10 +6,20 @@ load_dotenv()
 
 DEBUG = False
 
+ALLOWED_HOSTS = []
 
-ALLOWED_HOSTS = ["79.174.86.182"]
+SECURE_CROSS_ORIGIN_OPENER_POLICY = None
+
+WSGI_APPLICATION = "webstorage.wsgi.application"
 
 SECRET_KEY = os.getenv("SECRET_KEY")
+
+# basic static folder of the project
+STATIC_URL = "static/"
+# for collection of additional static files into static folder of the project
+STATICFILES_DIRS = [os.path.join(BASE_DIR, "build/static")]
+# MAIN STATIC FILE to be served BY NGINX!
+STATIC_ROOT = "/var/www/html/static"
 
 DATABASES = {
     "default": {
