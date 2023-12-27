@@ -38,7 +38,7 @@ npm run build
 
 cd ../backend/
 
-python manage.py runserver 8001
+python manage.py runserver
 
 ```
 
@@ -150,6 +150,16 @@ npm install package.json
 npm run build
 ```
 
+#### Change the URL for requests to your IP_ADDRESS
+
+```bash
+sudo nano src/settings/basic.js
+```
+
+```javascript
+export const BASIC_URL = "http://{YOUR IP_ADDRESS}";
+```
+
 ```bash
 cd ~/WebStorage/backend
 ```
@@ -158,7 +168,7 @@ cd ~/WebStorage/backend
 
 ```bash
 python3 -m venv venv
-source venv/bin/activat
+source venv/bin/activate
 pip install -r requirements.txt
 ```
 
@@ -193,7 +203,7 @@ nano config/production.py
 ```
 
 > check if DEBUG variable is set to 'FALSE', write down your IP and/or domain in the 'ALLOWED_HOSTS'
-
+> check if other variables and parameters correspond
 ```
 DEBUG = False
 
@@ -203,13 +213,21 @@ WSGI_APPLICATION= "webstorage.wsgi.application"
 
 CORS_ALLOWED_ORIGINS=[
 "http://localhost",
-"http://localhost:8001",
 "http://localhost:8000",
+"http://{YOUR_IP}",
+"http://{YOUR_IP}:8000",
 ]
 
 SECURE_CROSS_ORIGIN_OPENER_POLICY=None
 
 SECRET_KEY=os.getenv("SECRET_KEY")
+
+# basic static folder of the project
+STATIC_URL = "static/"
+# for collection of additional static files into static folder of the project
+STATICFILES_DIRS = [os.path.join(BASE_DIR, "build/static")]
+# MAIN STATIC FILE to be served BY NGINX!
+STATIC_ROOT = "/var/www/html/static"
 
 DATABASES = {
     "default": {
@@ -226,7 +244,17 @@ DATABASES = {
 sudo nano manage.py
 ```
 
-Change 'os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.base")' to be 'os.environ.setdefault("DJANGO_SETTINGS_MODULE", *"config.production"*)'
+>Change
+
+```python
+"os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.base")" 
+```
+
+>to be
+
+```python
+"os.environ.setdefault("DJANGO_SETTINGS_MODULE", *"config.production"*)" 
+```
 
 #### Make and apply makemigrations
 
@@ -236,27 +264,32 @@ python3 manage.py makemigrations
 python3 manage.py migrate
 ```
 
-#### Create superuser and collecting static fils
+#### Create superuser and collecting static files both for testing using only WSGI and for using NGING
+
+The static files will be collected to the static folder of the project (config.base) so that you could test the WSGI \
+and to the ```/var/www/html/static``` so that NGINX could serve them after its configured later on
 
 ```bash
 python manage.py createsuperuser
-
-python manage.py collectstatic
+python manage.py collectstatic --settings=config.base
+python manage.py collectstatic --settings=config.production
 ```
+
+#### in production config the static is collected to ```/var/www/html/static``` to be served by NGINX
 
 > you can check the initial deployment of the project by starting it manually
 
-```(venv)~/WebStorage/backend/manage.py runserver 0.0.0.0:8001
+```(venv)~/WebStorage/backend/manage.py runserver 0.0.0.0:8000
 ```
 
-*Open your browser at http://server_domain_or_IP:8001*
+*Open your browser at http://server_domain_or_IP:8000*
 
 ### GUNICORN - WSGI SETTINGS
 
 #### Checking if the gunicorn works if launched explicitly from the console
 
 ```bash
-gunicorn --bind 0.0.0.0:8001 webstorage.wsgi
+gunicorn --bind 0.0.0.0:8000 webstorage.wsgi
 ```
 
 then you can open the browser type in your 'ip/domain:8001' and you should get the index page of the application
@@ -365,12 +398,12 @@ sudo nano /etc/nginx/sites-available/webstorage
 ```
 server {
    listen 80;
-   server_name \<DOMAIN OR IP_ADDRESS\>;
+   server_name <DOMAIN OR IP_ADDRESS>;
 
    location = /favicon.ico { access_log off; log_not_found off;}
 
    location /static/ {
-      alias /home/{user}/WebStorage/backend;
+      root /var/www/html/;
    }
    location / {
       include proxy_params;
@@ -378,11 +411,10 @@ server {
       proxy_http_version 1.1;
       proxy_set_header Upgrade $http_upgrade;
       proxy_set_header Connection 'upgrade';
-      proxy_set_header Host $host;
       proxy_cache_bypass $http_upgrade;
    }
    location /media/ {
-      root /home/{user}/WebStorage/backend;
+      root /home/grin/WebStorage/backend;
    }
    error_page 500 502 503 504 /50x.html;
    location = /50x.html {
@@ -395,6 +427,21 @@ server {
 
 ```bash
 sudo ln -s /etc/nginx/sites-available/webstorage  /etc/nginx/sites-enabled
+```
+
+#### Attributing the rights to the folder from which NGINX will serve the static files
+
+change directory to the one NGINX will use to serve static
+
+```bash
+cd /var/www/html
+```
+
+Attribute the neccessary rights (so that the files can be read from that directory)
+> {your_username} means the user of the Operating system you created on the first step in order not to configure everything as 'root' user
+
+```bash
+sudo chown {your_username}:{your_username} .
 ```
 
 #### Set the rule for firewall to allow nginx
