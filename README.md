@@ -204,6 +204,7 @@ nano config/production.py
 
 > check if DEBUG variable is set to 'FALSE', write down your IP and/or domain in the 'ALLOWED_HOSTS'
 > check if other variables and parameters correspond
+
 ```
 DEBUG = False
 
@@ -412,6 +413,8 @@ server {
       proxy_set_header Upgrade $http_upgrade;
       proxy_set_header Connection 'upgrade';
       proxy_cache_bypass $http_upgrade;
+      client_max_body_size 40M;
+      proxy_read_timeout 300s;
    }
    location /media/ {
       root /home/grin/WebStorage/backend;
@@ -448,6 +451,30 @@ sudo chown {your_username}:{your_username} .
 
 ```bash
 sudo ufw allow 'Nginx Full'
+```
+
+#### Changing the BASIC_URL const to your IP_ADDRESS
+
+```bash
+sudo nano ~/Webstorage/frontend/src/settings/basic.js
+```
+
+>export const BASIC_URL = "http://{YOUR IP_ADDRESS}";
+
+#### Recompile the 'build' folder with new BASIC_URL, so that you frontend can address the right endpoint
+
+```bash
+cd ~/Webstorage/frontend/ && npm run build
+```
+
+#### Re-collect static files to the ```/var/www/html/static``` to be served by NGINX
+
+```bash
+cd ~/Webstorage/backend/ && source venv/bin/activate 
+```
+
+```bash
+python manage.py collectstatic --settings=config.production
 ```
 
 #### restarting nginx
