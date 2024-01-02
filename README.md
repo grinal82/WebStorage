@@ -150,16 +150,6 @@ npm install package.json
 npm run build
 ```
 
-#### Change the URL for requests to your IP_ADDRESS
-
-```bash
-sudo nano src/settings/basic.js
-```
-
-```javascript
-export const BASIC_URL = "http://{YOUR IP_ADDRESS}";
-```
-
 ```bash
 cd ~/WebStorage/backend
 ```
@@ -459,7 +449,11 @@ sudo ufw allow 'Nginx Full'
 sudo nano ~/Webstorage/frontend/src/settings/basic.js
 ```
 
->export const BASIC_URL = "http://{YOUR IP_ADDRESS}";
+>inside the basic.js be sure to modify 'const BASIC_URL'
+
+```javascript
+export const BASIC_URL = "http://{YOUR IP_ADDRESS}";
+```
 
 #### Recompile the 'build' folder with new BASIC_URL, so that you frontend can address the right endpoint
 
