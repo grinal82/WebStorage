@@ -4,6 +4,7 @@ import { fetchInspectFiles, AdminUpdateFile, deleteInspectedUser, AdminDeleteFil
 import { useNavigate } from 'react-router-dom'
 import { format } from 'date-fns'
 import { BASIC_URL } from '../settings/basic';
+import ClipboardJS from 'clipboard'
 
 export const AdminInspectFiles = () => {
   const navigate = useNavigate();
@@ -80,9 +81,12 @@ export const AdminInspectFiles = () => {
   };
 
   const handleCopyLink = () => {
-    //NOTE: built in clipboard API
-    navigator.clipboard.writeText(generatedLink).then(() => {
+    const clipboardInstance = new ClipboardJS('.copy-link-button', {
+      text: () => generatedLink
+    });
+    clipboardInstance.on('success', () => {
       onCopyLink();
+      clipboardInstance.destroy();
     });
   };
 
@@ -153,7 +157,7 @@ export const AdminInspectFiles = () => {
           </button>
               <div className='file_link'>
                 <input type="text" value={generatedLink} readOnly />
-                <button onClick={handleCopyLink}>Copy Link</button>
+                <button className="copy-link-button" onClick={handleCopyLink}>Copy Link</button>
               </div>
             </div>
           )}

@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { format } from 'date-fns'
 import { deleteFile, fetchFiles, updateFile, uploadFile } from '../store/filesReducer';
 import { BASIC_URL } from '../settings/basic';
-
+import ClipboardJS from 'clipboard'
 
 export const FilesHandler = () => {
 
@@ -96,9 +96,12 @@ export const FilesHandler = () => {
   };
 
   const handleCopyLink = () => {
-    //NOTE: built in clipboard API
-    navigator.clipboard.writeText(generatedLink).then(() => {
+    const clipboardInstance = new ClipboardJS('.copy-link-button', {
+      text: () => generatedLink
+    });
+    clipboardInstance.on('success', () => {
       onCopyLink();
+      clipboardInstance.destroy();
     });
   };
 
@@ -164,7 +167,7 @@ export const FilesHandler = () => {
           </button>
           <div className='file_link'>
             <input type="text" value={generatedLink} readOnly />
-            <button onClick={handleCopyLink}>Copy Link</button>
+            <button className="copy-link-button" onClick={handleCopyLink}>Copy Link</button>
           </div>
         </div>
       )}
