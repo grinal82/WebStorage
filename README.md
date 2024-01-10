@@ -270,7 +270,8 @@ python manage.py collectstatic --settings=config.production
 
 > you can check the initial deployment of the project by starting it manually
 
-```(venv)~/WebStorage/backend/manage.py runserver 0.0.0.0:8000
+```bash
+(venv)~/WebStorage/backend/manage.py runserver 0.0.0.0:8000
 ```
 
 *Open your browser at http://server_domain_or_IP:8000*
