@@ -28,7 +28,7 @@ export const fetchRegisterUser = createAsyncThunk(
   async ({ username, email, password }) => {
     try {
       const csrftoken = Cookies.get("csrftoken");
-
+      console.log("csrftoken:", csrftoken);
       const response = await client.post(
         "/accounts/register",
         {
