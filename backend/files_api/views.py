@@ -80,21 +80,27 @@ class UserFileListCreateView(
 
 
 # View to retrieve file from the link provided by frontend
-def Serve_file(request, file_id):
-    print("Serving file is triggered:", file_id)
+def Serve_file(request, uuid):
+    print("Serving file is triggered:", uuid)
     # Look up the file based on the provided file ID
-    user_file = get_object_or_404(UserFile, id=file_id)
+    user_file = get_object_or_404(UserFile, uuid=uuid)
 
     # Retrieve the actual file path from the database
     file_path = user_file.file.path
 
     print("File path:", file_path)
 
+    # Update the last download date and save the changes
     user_file.last_download_date = timezone.now()
     user_file.save()
 
     # Serve the file using Django's FileResponse
     response = FileResponse(open(file_path, "rb"))
+    # Set appropriate content type and content-disposition headers
+    response["Content-Type"] = "application/octet-stream"
+    response["Content-Disposition"] = 'attachment; filename="{filename}"'.format(
+        filename=user_file.file.name
+    )
     return response
 
 

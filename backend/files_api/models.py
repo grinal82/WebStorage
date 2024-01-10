@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth import get_user_model
-from django.utils.text import get_valid_filename
+import uuid
 
 Users = get_user_model()
 
@@ -17,6 +17,7 @@ class UserFile(models.Model):
     size = models.PositiveIntegerField()
     upload_date = models.DateTimeField(auto_now_add=True)
     last_download_date = models.DateTimeField(null=True, blank=True)
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
     def __str__(self):
         return f"{self.user} - {self.name}"

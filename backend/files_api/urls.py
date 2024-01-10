@@ -9,7 +9,7 @@ from .views import (
 urlpatterns = [
     path("upload", UserFileUploadView.as_view()),
     path("get_files", UserFileListCreateView.as_view()),
-    path("<int:file_id>/", Serve_file, name="serve_file"),
+    path("<str:uuid>/", Serve_file, name="serve_file"),
     path("update/<int:pk>/", UserFileListCreateView.as_view()),
     path("delete/<int:pk>/", UserFileListCreateView.as_view()),
     path("admin", UserFileDetailView.as_view()),
