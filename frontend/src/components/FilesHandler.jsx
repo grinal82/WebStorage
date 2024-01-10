@@ -58,9 +58,9 @@ export const FilesHandler = () => {
   // NOTE: Download functionality
   const handleDownload = () => {
 
-    const fileID = selectedFile.id;
+    const fileUUID = selectedFile.uuid;
 
-    const fileDownloadLink = `${BASIC_URL}/files/${fileID}/`;
+    const fileDownloadLink = `${BASIC_URL}/files/${fileUUID}/`;
   
     if (fileDownloadLink) {
       // Create a link element
@@ -84,8 +84,8 @@ export const FilesHandler = () => {
 
   const handleGenerateLink = () => {
     
-    const fileID = selectedFile.id;
-    const link = `${BASIC_URL}/files/${fileID}/`;
+    const fileUUID = selectedFile.uuid;
+    const link = `${BASIC_URL}/files/${fileUUID}/`;
     setGeneratedLink(link);
   }
 
